@@ -29,6 +29,9 @@ yarn-error.*
 .DS_Store
 *.pem
 
+expo-push-notification-a8883-firebase-adminsdk-fbsvc-352bf506d9.json
+
+
 # local env files
 .env*.local
 
