@@ -13,7 +13,15 @@
         {
           "icon": "./assets/favicon.png",
           "color": "#ffffff",
-          "sounds": ["./assets/ip.mp3"]
+          "sounds": [
+            "./assets/ip.mp3"
+          ]
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "recordAudioAndroid": true
         }
       ]
     ],
@@ -23,7 +31,11 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.hexanest",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "googleServicesFile": "./google-services.json",
@@ -32,7 +44,15 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.hexanest",
-      "permissions": ["NOTIFICATIONS"]
+      "permissions": [
+        "NOTIFICATIONS",
+        "CAMERA",
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "INTERNET",
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"

@@ -3,7 +3,7 @@ import { supabase } from '../utils/supabase'
 import { StyleSheet, View, Alert } from 'react-native'
 import { Button, Input } from '@rneui/themed'
 import { Session } from '@supabase/supabase-js'
-import Upload from './widget/Upload'
+import EnhancedUpload from './widget/EnhancedUpload'
 import Push from './Push'
 
 export default function Account({ session }: { session: Session }) {
@@ -57,22 +57,29 @@ export default function Account({ session }: { session: Session }) {
       setLoading(true)
       if (!session?.user) throw new Error('No user on the session!')
 
+      console.log('Updating profile with avatar path:', avatar_url)
+
       const updates = {
         id: session?.user.id,
         username,
         website,
-        avatar_url,
+        avatar_url,  // Store just the filename, not the full URL
         updated_at: new Date(),
       }
 
       const { error } = await supabase.from('profiles').upsert(updates)
 
       if (error) {
+        console.error('Error updating profile:', error)
         throw error
       }
+      
+      // Refresh profile data after update
+      await getProfile()
+      Alert.alert('Success', 'Profile updated successfully!')
     } catch (error) {
       if (error instanceof Error) {
-        Alert.alert(error.message)
+        Alert.alert('Error', error.message)
       }
     } finally {
       setLoading(false)
@@ -98,29 +105,37 @@ export default function Account({ session }: { session: Session }) {
           disabled={loading}
         />
       </View>
-    
-          <View style={styles.verticallySpaced}>
-            <Upload
-              size={200}
-              url={avatarUrl}
-              onUpload={(url: string) => {
-                setAvatarUrl(url)
-                updateProfile({ username, website, avatar_url: url })
-              }}
-            />
-          </View>
-    
-          <View style={styles.verticallySpaced}>
-            <Button title="Sign Out" onPress={() => supabase.auth.signOut()} />
-          </View>
 
-          <View style={[styles.verticallySpaced]}>
-            <Push/>
-          </View>
+      <View style={styles.verticallySpaced}>
+        <EnhancedUpload
+          size={200}
+          avatarPath={avatarUrl}
+          userId={session?.user?.id || ''}
+          username={username}
+          onUpload={(filePath: string) => {
+            console.log('Avatar uploaded in Account component, path:', filePath)
+            // Update local state
+            setAvatarUrl(filePath)
+            // Update profile with the new avatar path
+            updateProfile({
+              username,
+              website,
+              avatar_url: filePath
+            })
+          }}
+        />
+      </View>
 
-        </View>
-      )
-    }
+      <View style={styles.verticallySpaced}>
+        <Button title="Sign Out" onPress={() => supabase.auth.signOut()} />
+      </View>
+
+      <View style={[styles.verticallySpaced]}>
+        <Push/>
+      </View>
+    </View>
+  )
+}
 
 const styles = StyleSheet.create({
   container: {
